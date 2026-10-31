@@ -53,7 +53,24 @@ uv run --env-file .env uvicorn turnos_ga.api:app --reload
 - `GET /health` — confirma que el servicio está arriba.
 - `POST /horario` — recibe el equipo y las reglas, devuelve el horario.
 
-Desde la terminal, sin servicio:
+## Contenedor
+
+Requiere Docker Desktop en ejecución.
+
+```bash
+docker build -t turnos-ga-api .
+docker run --rm -p 8000:8000 --env-file .env turnos-ga-api
+```
+
+La imagen solo instala las dependencias del servicio
+(`uv sync --no-default-groups`) y solo copia `src/turnos_ga/`. El secreto
+se entrega al ejecutar (`--env-file .env`), no al construir: `.env` está en
+`.dockerignore`. `docker ps` muestra el estado del health check
+(`healthy`).
+
+## Uso desde la terminal
+
+Sin levantar el servicio:
 
 ```bash
 uv run python -m turnos_ga.optimizador --personas Ana Beto Carla Dani Eva Fede Gabi
