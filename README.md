@@ -28,3 +28,33 @@ git clone <url-del-repositorio>
 cd turnos-ga
 uv sync
 ```
+
+## Configurar el secreto
+
+El servicio exige una API key en el encabezado `X-API-Key`. La clave se lee
+de la variable de entorno `API_KEY` y **nunca** se escribe en el código:
+
+```bash
+cp .env.example .env
+# edite .env y reemplace el valor de API_KEY
+```
+
+`.env` está en `.gitignore`. Si `API_KEY` no está definida, el servicio no
+arranca.
+
+## Ejecutar el servicio
+
+```bash
+uv run --env-file .env uvicorn turnos_ga.api:app --reload
+```
+
+- `http://localhost:8000/` — página para armar el horario.
+- `http://localhost:8000/docs` — documentación interactiva de la API.
+- `GET /health` — confirma que el servicio está arriba.
+- `POST /horario` — recibe el equipo y las reglas, devuelve el horario.
+
+Desde la terminal, sin servicio:
+
+```bash
+uv run python -m turnos_ga.optimizador --personas Ana Beto Carla Dani Eva Fede Gabi
+```
