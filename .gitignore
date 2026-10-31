@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# Secretos: la API key se configura en .env, que nunca se versiona.
+# Ver .env.example para saber qué variables definir.
+.env
