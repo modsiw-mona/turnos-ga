@@ -16,6 +16,7 @@ dependencies = [
 # Herramientas de desarrollo: pruebas, linting, notebooks. Nunca se
 # instalan en el servicio desplegado.
 dev = [
+    "httpx2>=2.16.0",
     "pytest",
     "ruff",
 ]
