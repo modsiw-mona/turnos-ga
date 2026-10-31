@@ -80,6 +80,5 @@ def test_servicio_no_arranca_sin_api_key(monkeypatch):
 
     monkeypatch.delenv("API_KEY", raising=False)
 
-    with pytest.raises(RuntimeError, match="API_KEY"):
-        with TestClient(api.app):
-            pass
+    with pytest.raises(RuntimeError, match="API_KEY"), TestClient(api.app):
+        pass

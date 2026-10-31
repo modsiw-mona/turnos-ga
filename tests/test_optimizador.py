@@ -27,7 +27,9 @@ def test_encuentra_horario_valido_en_el_caso_del_taller():
     # El resultado central del Taller U2: con la semilla 42 y los
     # mismos hiperparámetros, el algoritmo encuentra un horario sin
     # violaciones para 7 personas y 14 turnos.
-    problema = Problema(personas=("Ana", "Beto", "Carla", "Dani", "Eva", "Fede", "Gabi"))
+    problema = Problema(
+        personas=("Ana", "Beto", "Carla", "Dani", "Eva", "Fede", "Gabi")
+    )
 
     resultado = resolver(problema, semilla=42)
 

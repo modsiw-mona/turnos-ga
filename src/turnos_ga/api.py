@@ -96,7 +96,8 @@ class SolicitudHorario(BaseModel):
         default=6, ge=1, description="Máximo de turnos por persona en la semana."
     )
     semilla: int = Field(
-        default=SEMILLA, description="Semilla del algoritmo (misma semilla, mismo horario)."
+        default=SEMILLA,
+        description="Semilla del algoritmo (misma semilla, mismo horario).",
     )
 
     model_config = {

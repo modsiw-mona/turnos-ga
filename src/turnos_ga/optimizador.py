@@ -111,7 +111,9 @@ def main() -> None:
     resultado = resolver(problema, semilla=args.semilla)
 
     for turno in describir_horario(problema, resultado.horario):
-        print(f"{turno['dia']:9s} {turno['jornada']:6s} | {', '.join(turno['personas'])}")
+        print(
+            f"{turno['dia']:9s} {turno['jornada']:6s} | {', '.join(turno['personas'])}"
+        )
 
     print()
     print("Turnos por persona:", turnos_por_persona(problema, resultado.horario))
