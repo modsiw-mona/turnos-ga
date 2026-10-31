@@ -5,63 +5,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Turnos GA</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 0 auto; padding: 16px; color: #1f2937; background: #f9fafb; }
-    h1 { font-size: 1.4rem; margin-bottom: 4px; }
-    p.sub { margin-top: 0; color: #6b7280; }
-    label { display: block; font-weight: 600; margin-top: 12px; }
-    textarea, input { width: 100%; box-sizing: border-box; padding: 8px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 6px; }
+    :root { --azul: #2563eb; --azul-suave: #dbeafe; --texto: #1f2937; --gris: #6b7280; --borde: #d1d5db; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; color: var(--texto); background: #f3f4f6; }
+    header { background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: #fff; padding: 24px 16px; }
+    header h1 { margin: 0; font-size: 1.5rem; }
+    header p { margin: 4px 0 0; opacity: 0.9; }
+    main { max-width: 640px; margin: 0 auto; padding: 16px; }
+    .tarjeta { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); }
+    .tarjeta h2 { margin: 0 0 12px; font-size: 1.05rem; }
+    label { display: block; font-weight: 600; font-size: 0.9rem; margin-top: 12px; }
+    input { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid var(--borde); border-radius: 8px; }
+    input:focus { outline: 2px solid var(--azul-suave); border-color: var(--azul); }
+    .agregar { display: flex; gap: 8px; }
+    .agregar button { width: auto; margin: 0; padding: 0 16px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 999px; background: var(--azul-suave); color: #1e40af; font-weight: 600; }
+    .chip button { width: 24px; height: 24px; margin: 0; padding: 0; border-radius: 50%; background: #bfdbfe; color: #1e40af; font-size: 0.9rem; line-height: 1; }
+    .nota { color: var(--gris); font-size: 0.85rem; margin: 8px 0 0; }
     .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
-    button { margin-top: 16px; width: 100%; padding: 12px; font-size: 1rem; font-weight: 600; color: #fff; background: #2563eb; border: 0; border-radius: 6px; }
+    button { width: 100%; margin-top: 16px; padding: 12px; font-size: 1rem; font-weight: 600; color: #fff; background: var(--azul); border: 0; border-radius: 8px; cursor: pointer; }
     button:disabled { background: #93c5fd; }
-    .estado { margin-top: 16px; padding: 10px; border-radius: 6px; }
-    .ok { background: #dcfce7; } .mal { background: #fee2e2; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; background: #fff; }
-    th, td { text-align: left; padding: 6px; border-bottom: 1px solid #e5e7eb; font-size: 0.95rem; }
+    .estado { padding: 12px; border-radius: 8px; font-weight: 600; margin-bottom: 12px; }
+    .ok { background: #dcfce7; color: #166534; } .mal { background: #fee2e2; color: #991b1b; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #e5e7eb; font-size: 0.95rem; }
+    .jornada { padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+    .mañana { background: #fef3c7; color: #92400e; }
+    .tarde { background: #ffedd5; color: #9a3412; }
+    .noche { background: #e0e7ff; color: #3730a3; }
   </style>
 </head>
 <body>
-  <h1>Turnos GA</h1>
-  <p class="sub">Arma el horario semanal de tu equipo con un algoritmo genético.</p>
+  <header>
+    <h1>Turnos GA</h1>
+    <p>Arma el horario semanal de tu equipo con un algoritmo genético.</p>
+  </header>
 
-  <form id="form">
-    <label for="personas">Personas (una por línea)</label>
-    <textarea id="personas" rows="7">Ana
-Beto
-Carla
-Dani
-Eva
-Fede
-Gabi</textarea>
+  <main>
+    <form id="form">
+      <section class="tarjeta">
+        <h2>Equipo <span id="conteo" class="nota"></span></h2>
+        <div class="agregar">
+          <input id="nombre" placeholder="Nombre de la persona" maxlength="40" autocomplete="off">
+          <button id="agregar" type="button">Agregar</button>
+        </div>
+        <div id="chips" class="chips"></div>
+        <p id="aviso" class="nota"></p>
+      </section>
 
-    <div class="fila">
-      <div><label for="dias">Días</label><input id="dias" type="number" min="1" max="7" value="7"></div>
-      <div><label for="turnos_por_dia">Turnos por día</label><input id="turnos_por_dia" type="number" min="1" max="3" value="2"></div>
-      <div><label for="personas_por_turno">Personas por turno</label><input id="personas_por_turno" type="number" min="1" value="3"></div>
-      <div><label for="max_turnos_por_persona">Máximo por persona</label><input id="max_turnos_por_persona" type="number" min="1" value="6"></div>
-    </div>
+      <section class="tarjeta">
+        <h2>Reglas de la semana</h2>
+        <div class="fila">
+          <div><label for="dias">Días</label><input id="dias" type="number" min="1" max="7" value="7"></div>
+          <div><label for="turnos_por_dia">Turnos por día</label><input id="turnos_por_dia" type="number" min="1" max="3" value="2"></div>
+          <div><label for="personas_por_turno">Personas por turno</label><input id="personas_por_turno" type="number" min="1" value="3"></div>
+          <div><label for="max_turnos_por_persona">Máximo por persona</label><input id="max_turnos_por_persona" type="number" min="1" value="6"></div>
+        </div>
+        <label for="clave">API key</label>
+        <input id="clave" type="password" autocomplete="off">
+        <button id="boton" type="submit">Generar horario</button>
+      </section>
+    </form>
 
-    <label for="clave">API key</label>
-    <input id="clave" type="password" autocomplete="off">
-
-    <button id="boton" type="submit">Generar horario</button>
-  </form>
-
-  <div id="resultado"></div>
+    <div id="resultado"></div>
+  </main>
 
   <script>
+    const personas = ["Ana", "Beto", "Carla", "Dani", "Eva", "Fede", "Gabi"];
+
     const form = document.getElementById("form");
     const boton = document.getElementById("boton");
+    const campoNombre = document.getElementById("nombre");
+    const aviso = document.getElementById("aviso");
     const salida = document.getElementById("resultado");
     const numero = (id) => Number(document.getElementById(id).value);
 
+    function dibujarPersonas() {
+      const chips = document.getElementById("chips");
+      chips.replaceChildren(...personas.map((nombre, i) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = nombre;
+        const quitar = document.createElement("button");
+        quitar.type = "button";
+        quitar.textContent = "×";
+        quitar.setAttribute("aria-label", `Quitar a ${nombre}`);
+        quitar.addEventListener("click", () => { personas.splice(i, 1); dibujarPersonas(); });
+        chip.append(quitar);
+        return chip;
+      }));
+      document.getElementById("conteo").textContent = `(${personas.length})`;
+    }
+
+    function agregarPersona() {
+      const nombre = campoNombre.value.trim();
+      aviso.textContent = "";
+      if (!nombre) return;
+      if (personas.includes(nombre)) {
+        aviso.textContent = `${nombre} ya está en el equipo.`;
+        return;
+      }
+      personas.push(nombre);
+      campoNombre.value = "";
+      campoNombre.focus();
+      dibujarPersonas();
+    }
+
+    document.getElementById("agregar").addEventListener("click", agregarPersona);
+    campoNombre.addEventListener("keydown", (evento) => {
+      if (evento.key === "Enter") { evento.preventDefault(); agregarPersona(); }
+    });
+
     form.addEventListener("submit", async (evento) => {
       evento.preventDefault();
+      if (personas.length === 0) {
+        mostrarError("Agrega al menos una persona al equipo.");
+        return;
+      }
       boton.disabled = true;
       boton.textContent = "Buscando horario...";
       salida.innerHTML = "";
 
       const solicitud = {
-        personas: document.getElementById("personas").value.split("\n").map((n) => n.trim()).filter(Boolean),
+        personas,
         dias: numero("dias"),
         turnos_por_dia: numero("turnos_por_dia"),
         personas_por_turno: numero("personas_por_turno"),
@@ -89,39 +156,57 @@ Gabi</textarea>
       }
     });
 
+    function tarjeta(...hijos) {
+      const section = document.createElement("section");
+      section.className = "tarjeta";
+      section.append(...hijos);
+      return section;
+    }
+
     function mostrarError(mensaje) {
       const div = document.createElement("div");
       div.className = "estado mal";
       div.textContent = mensaje;
-      salida.replaceChildren(div);
+      salida.replaceChildren(tarjeta(div));
+      salida.scrollIntoView({ behavior: "smooth" });
     }
 
     function mostrarHorario(datos) {
       const estado = document.createElement("div");
       estado.className = "estado " + (datos.valido ? "ok" : "mal");
       estado.textContent = datos.valido
-        ? `Horario válido, encontrado en ${datos.generaciones} generaciones.`
+        ? `✓ Horario válido, encontrado en ${datos.generaciones} generaciones.`
         : `El mejor horario encontrado tiene ${datos.violaciones.violaciones} violaciones.`;
 
       const tabla = document.createElement("table");
       tabla.innerHTML = "<tr><th>Día</th><th>Jornada</th><th>Personas</th></tr>";
       for (const turno of datos.horario) {
         const fila = tabla.insertRow();
-        for (const valor of [turno.dia, turno.jornada, turno.personas.join(", ")]) {
-          fila.insertCell().textContent = valor;
-        }
+        fila.insertCell().textContent = turno.dia;
+        const jornada = document.createElement("span");
+        jornada.className = `jornada ${turno.jornada}`;
+        jornada.textContent = turno.jornada;
+        fila.insertCell().append(jornada);
+        fila.insertCell().textContent = turno.personas.join(", ");
       }
 
-      const totales = document.createElement("table");
-      totales.innerHTML = "<tr><th>Persona</th><th>Turnos</th></tr>";
+      const titulo = document.createElement("h2");
+      titulo.textContent = "Turnos por persona";
+      const totales = document.createElement("div");
+      totales.className = "chips";
       for (const [nombre, n] of Object.entries(datos.turnos_por_persona)) {
-        const fila = totales.insertRow();
-        fila.insertCell().textContent = nombre;
-        fila.insertCell().textContent = n;
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.style.paddingRight = "12px";
+        chip.textContent = `${nombre} · ${n}`;
+        totales.append(chip);
       }
 
-      salida.replaceChildren(estado, tabla, totales);
+      salida.replaceChildren(tarjeta(estado, tabla), tarjeta(titulo, totales));
+      salida.scrollIntoView({ behavior: "smooth" });
     }
+
+    dibujarPersonas();
   </script>
 </body>
 </html>
